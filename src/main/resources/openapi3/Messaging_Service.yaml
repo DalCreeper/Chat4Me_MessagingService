@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: Chat4Me - Messaging Service
+  version: 1.0.0
+  description: >
+    **Chat4Me Messaging Service** is a reliable platform for sending and receiving messages between users.
+
+
+    **Key Features:**
+
+    - Retrieve message history.
+
+    - Send new messages quickly and efficiently.
+
+
+    The service is designed to provide a smooth communication experience while ensuring data security and confidentiality.
+
+servers:
+  - url: http://localhost:8080
+    description: Messaging service production server
+
+tags:
+  - name: messaging
+    description: Endpoints related to sending and receiving messages.
+
+paths:
+  /messages:
+    get:
+      tags:
+        - messaging
+      summary: Get messages for the authenticated user
+      operationId: getMessages
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: send_receive
+          in: query
+          required: true
+          schema:
+            type: boolean
+            format: boolean
+      responses:
+        '200':
+          description: List of messages for the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageList'
+        '403':
+          description: Forbidden - User not authorized to access these messages
+    post:
+      tags:
+        - messaging
+      summary: Send a new message
+      operationId: newMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMessage'
+      responses:
+        '201':
+          description: Message successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Bad request - Invalid input
+
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Message ID
+        sender:
+          type: string
+          description: UUID of the sender
+          format: uuid
+        receiver:
+          type: string
+          description: UUID of the receiver
+          format: uuid
+        content:
+          type: string
+        received:
+          type: boolean
+          format: boolean
+        timestamp:
+          type: string
+          format: date-time
+    
+    MessageList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Message'
+    
+    NewMessage:
+      type: object
+      required:
+        - sender
+        - receiver
+        - content
+      properties:
+        sender:
+          type: string
+          description: UUID of the sender
+          format: uuid
+        receiver:
+          type: string
+          description: UUID of the receiver
+          format: uuid
+        content:
+          type: string
