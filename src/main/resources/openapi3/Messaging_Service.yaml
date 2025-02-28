@@ -31,18 +31,19 @@ paths:
       summary: Get messages for the authenticated user
       operationId: getMessages
       parameters:
-        - name: user_id
+        - name: user_id_sender
           in: query
           required: true
           schema:
             type: string
             format: uuid
-        - name: send_receive
+        - name: user_id_receiver
+          description: Id provided if a list of messages sent to a specific user is needed
           in: query
-          required: true
+          required: false
           schema:
-            type: boolean
-            format: boolean
+            type: string
+            format: uuid
       responses:
         '200':
           description: List of messages for the authenticated user
@@ -62,25 +63,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewMessage'
+              $ref: '#/components/schemas/NewMessageDto'
       responses:
         '201':
           description: Message successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: '#/components/schemas/MessageDto'
         '400':
           description: Bad request - Invalid input
 
 components:
   schemas:
-    Message:
+    MessageDto:
       type: object
       properties:
         id:
           type: string
           description: Message ID
+          format: uuid
         sender:
           type: string
           description: UUID of the sender
@@ -101,15 +103,19 @@ components:
     MessageList:
       type: array
       items:
-        $ref: '#/components/schemas/Message'
+        $ref: '#/components/schemas/MessageDto'
     
-    NewMessage:
+    NewMessageDto:
       type: object
       required:
         - sender
         - receiver
         - content
       properties:
+        id:
+          type: string
+          description: New message ID
+          format: uuid
         sender:
           type: string
           description: UUID of the sender
