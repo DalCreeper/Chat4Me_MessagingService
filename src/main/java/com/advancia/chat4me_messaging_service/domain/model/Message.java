@@ -1,15 +1,11 @@
 package com.advancia.chat4me_messaging_service.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

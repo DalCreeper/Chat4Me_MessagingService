@@ -112,10 +112,6 @@ components:
         - receiver
         - content
       properties:
-        id:
-          type: string
-          description: New message ID
-          format: uuid
         sender:
           type: string
           description: UUID of the sender

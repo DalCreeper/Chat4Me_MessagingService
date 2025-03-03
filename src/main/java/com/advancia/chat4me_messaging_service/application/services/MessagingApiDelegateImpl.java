@@ -2,6 +2,7 @@ package com.advancia.chat4me_messaging_service.application.services;
 
 import com.advancia.Chat4Me_Messaging_Service.generated.application.api.MessagingApiDelegate;
 import com.advancia.Chat4Me_Messaging_Service.generated.application.model.MessageDto;
+import com.advancia.Chat4Me_Messaging_Service.generated.application.model.NewMessageDto;
 import com.advancia.chat4me_messaging_service.application.mappers.MessageMappers;
 import com.advancia.chat4me_messaging_service.domain.model.Message;
 import com.advancia.chat4me_messaging_service.domain.services.MessageService;
@@ -24,5 +25,13 @@ public class MessagingApiDelegateImpl implements MessagingApiDelegate {
         List<MessageDto> messagesDto = messageMappers.convertFromDomain(messages);
 
         return ResponseEntity.ok(messagesDto);
+    }
+
+    @Override
+    public ResponseEntity<MessageDto> newMessage(NewMessageDto newMessageDto) {
+        Message newMessage = messageService.newMessage(messageMappers.convertToDomain(newMessageDto));
+        MessageDto newMessDto = messageMappers.convertFromDomain(newMessage);
+
+        return ResponseEntity.ok(newMessDto);
     }
 }

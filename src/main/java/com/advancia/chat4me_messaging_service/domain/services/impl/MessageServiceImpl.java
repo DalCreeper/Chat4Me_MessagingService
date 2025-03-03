@@ -1,6 +1,7 @@
 package com.advancia.chat4me_messaging_service.domain.services.impl;
 
 import com.advancia.chat4me_messaging_service.domain.model.Message;
+import com.advancia.chat4me_messaging_service.domain.model.NewMessage;
 import com.advancia.chat4me_messaging_service.domain.repository.MessagesRepoService;
 import com.advancia.chat4me_messaging_service.domain.services.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +18,10 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
         return messagesRepoService.getMessages(userIdSender, userIdReceiver);
+    }
+
+    @Override
+    public Message newMessage(NewMessage newMessage) {
+        return messagesRepoService.newMessage(newMessage);
     }
 }

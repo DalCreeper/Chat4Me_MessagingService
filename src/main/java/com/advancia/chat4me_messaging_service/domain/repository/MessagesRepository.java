@@ -2,7 +2,9 @@ package com.advancia.chat4me_messaging_service.domain.repository;
 
 import com.advancia.chat4me_messaging_service.domain.model.Message;
 import feign.Param;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
