@@ -20,7 +20,11 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
 
     @Override
     public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
-        return messagesRepository.getMessages(userIdSender, userIdReceiver);
+        List<Message> messages = messagesRepository.getMessages(userIdSender, userIdReceiver);
+        messages.forEach(msg -> msg.setReceived(true));
+        messagesRepository.saveAll(messages);
+
+        return messages;
     }
 
     @Override
