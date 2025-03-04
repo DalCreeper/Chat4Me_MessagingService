@@ -23,10 +23,5 @@ public interface MessageMappers {
     @Mapping(source = "sender", target = "sender")
     @Mapping(source = "receiver", target = "receiver")
     @Mapping(source = "content", target = "content")
-    NewMessageDto convertFromDomain(NewMessage newMessage);
-
-    @Mapping(source = "sender", target = "sender")
-    @Mapping(source = "receiver", target = "receiver")
-    @Mapping(source = "content", target = "content")
     NewMessage convertToDomain(NewMessageDto newMessageDto);
 }
