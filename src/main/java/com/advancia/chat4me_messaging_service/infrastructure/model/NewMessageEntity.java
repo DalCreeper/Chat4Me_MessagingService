@@ -1,22 +1,18 @@
-package com.advancia.chat4me_messaging_service.domain.model;
+package com.advancia.chat4me_messaging_service.infrastructure.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
-    private UUID id;
+public class NewMessageEntity {
     private UUID sender;
     private UUID receiver;
     private String content;
-    private Boolean received;
-    private OffsetDateTime timestamp;
 }

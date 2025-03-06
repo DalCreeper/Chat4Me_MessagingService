@@ -3,7 +3,10 @@ package com.advancia.chat4me_messaging_service.infrastructure.services.impl;
 import com.advancia.chat4me_messaging_service.domain.model.Message;
 import com.advancia.chat4me_messaging_service.domain.model.NewMessage;
 import com.advancia.chat4me_messaging_service.domain.repository.MessagesRepoService;
-import com.advancia.chat4me_messaging_service.domain.repository.MessagesRepository;
+import com.advancia.chat4me_messaging_service.infrastructure.mappers.MessageEntityMappers;
+import com.advancia.chat4me_messaging_service.infrastructure.model.MessageEntity;
+import com.advancia.chat4me_messaging_service.infrastructure.model.NewMessageEntity;
+import com.advancia.chat4me_messaging_service.infrastructure.repository.MessagesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -17,27 +20,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessagesRepoServiceImpl implements MessagesRepoService {
     private final MessagesRepository messagesRepository;
+    private final MessageEntityMappers messageEntityMappers;
 
     @Override
     public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
-        List<Message> messages = messagesRepository.getMessages(userIdSender, userIdReceiver);
-        messages.forEach(msg -> msg.setReceived(true));
-        messagesRepository.saveAll(messages);
-
-        return messages;
+        List<MessageEntity> messagesEntity = messagesRepository.getMessages(userIdSender, userIdReceiver);
+        messagesEntity.forEach(msg -> msg.setReceived(true));
+        messagesRepository.saveAll(messagesEntity);
+        return messageEntityMappers.convertFromInfrastructure(messagesEntity);
     }
 
     @Override
     public Message newMessage(NewMessage newMessage) {
+        NewMessageEntity newMessageEntity = messageEntityMappers.convertToInfrastructure(newMessage);
         OffsetDateTime now = OffsetDateTime.now();
-        Message savedMessage = Message.builder()
-            .sender(newMessage.getSender())
-            .receiver(newMessage.getReceiver())
-            .content(newMessage.getContent())
+        MessageEntity savedMessage = MessageEntity.builder()
+            .sender(newMessageEntity.getSender())
+            .receiver(newMessageEntity.getReceiver())
+            .content(newMessageEntity.getContent())
             .received(false)
             .timestamp(now)
             .build();
-
-        return messagesRepository.save(savedMessage);
+        return messageEntityMappers.convertFromInfrastructure(messagesRepository.save(savedMessage));
     }
 }

@@ -23,7 +23,6 @@ public class MessagingApiDelegateImpl implements MessagingApiDelegate {
     public ResponseEntity<List<MessageDto>> getMessages(UUID userIdSender, UUID userIdReceiver) {
         List<Message> messages = messageService.getMessages(userIdSender, userIdReceiver);
         List<MessageDto> messagesDto = messageMappers.convertFromDomain(messages);
-
         return ResponseEntity.ok(messagesDto);
     }
 
@@ -31,7 +30,6 @@ public class MessagingApiDelegateImpl implements MessagingApiDelegate {
     public ResponseEntity<MessageDto> newMessage(NewMessageDto newMessageDto) {
         Message newMessage = messageService.newMessage(messageMappers.convertToDomain(newMessageDto));
         MessageDto newMessDto = messageMappers.convertFromDomain(newMessage);
-
         return ResponseEntity.ok(newMessDto);
     }
 }
