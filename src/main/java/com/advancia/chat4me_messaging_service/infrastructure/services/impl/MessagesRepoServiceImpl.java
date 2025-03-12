@@ -7,6 +7,7 @@ import com.advancia.chat4me_messaging_service.infrastructure.mappers.MessageEnti
 import com.advancia.chat4me_messaging_service.infrastructure.model.MessageEntity;
 import com.advancia.chat4me_messaging_service.infrastructure.model.NewMessageEntity;
 import com.advancia.chat4me_messaging_service.infrastructure.repository.MessagesRepository;
+import com.advancia.chat4me_messaging_service.infrastructure.services.SystemDateTimeProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class MessagesRepoServiceImpl implements MessagesRepoService {
     private final MessagesRepository messagesRepository;
     private final MessageEntityMappers messageEntityMappers;
+    private final SystemDateTimeProvider systemDateTimeProvider;
 
     @Override
     public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
@@ -33,7 +35,7 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
     @Override
     public Message newMessage(NewMessage newMessage) {
         NewMessageEntity newMessageEntity = messageEntityMappers.convertToInfrastructure(newMessage);
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = systemDateTimeProvider.now();
         MessageEntity savedMessage = MessageEntity.builder()
             .sender(newMessageEntity.getSender())
             .receiver(newMessageEntity.getReceiver())

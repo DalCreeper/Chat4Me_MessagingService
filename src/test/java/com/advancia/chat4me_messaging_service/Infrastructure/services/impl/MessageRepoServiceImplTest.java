@@ -1,0 +1,197 @@
+package com.advancia.chat4me_messaging_service.Infrastructure.services.impl;
+
+import com.advancia.Chat4Me_Messaging_Service.generated.application.model.MessageDto;
+import com.advancia.chat4me_messaging_service.domain.model.Message;
+import com.advancia.chat4me_messaging_service.domain.model.NewMessage;
+import com.advancia.chat4me_messaging_service.infrastructure.mappers.MessageEntityMappers;
+import com.advancia.chat4me_messaging_service.infrastructure.model.MessageEntity;
+import com.advancia.chat4me_messaging_service.infrastructure.model.NewMessageEntity;
+import com.advancia.chat4me_messaging_service.infrastructure.repository.MessagesRepository;
+import com.advancia.chat4me_messaging_service.infrastructure.services.SystemDateTimeProvider;
+import com.advancia.chat4me_messaging_service.infrastructure.services.impl.MessagesRepoServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.*;
+
+
+@ExtendWith(MockitoExtension.class)
+public class MessageRepoServiceImplTest {
+    @Mock
+    private MessagesRepository messagesRepository;
+    @Mock
+    private MessageEntityMappers messageEntityMappers;
+    @Mock
+    private SystemDateTimeProvider systemDateTimeProvider;
+    @InjectMocks
+    private MessagesRepoServiceImpl messagesRepoServiceImpl;
+
+    @Test
+    void shouldSetReceivedAndReturnMessages_whenAllOk() {
+        UUID userIdSender = UUID.randomUUID();
+        UUID userIdReceiver = UUID.randomUUID();
+        List<MessageEntity> messagesEntity = List.of(
+            MessageEntity.builder().id(UUID.randomUUID()).received(false).build(),
+            MessageEntity.builder().id(UUID.randomUUID()).received(false).build()
+        );
+        List<Message> messages = List.of(
+            Message.builder().id(messagesEntity.get(0).getId()).build(),
+            Message.builder().id(messagesEntity.get(1).getId()).build()
+        );
+
+        doReturn(messagesEntity).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        doReturn(messages).when(messageEntityMappers).convertFromInfrastructure(messagesEntity);
+
+        List<Message> messagesResult = messagesRepoServiceImpl.getMessages(userIdSender, userIdReceiver);
+
+        assertEquals(messages, messagesResult);
+        assertTrue(messagesEntity.stream().allMatch(MessageEntity::getReceived));
+
+        verify(messagesRepository).saveAll(messagesEntity);
+        verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        verify(messageEntityMappers).convertFromInfrastructure(messagesEntity);
+    }
+
+    @Test
+    void shouldPropagateException_whenMessagesRepositoryFails() {
+        UUID userIdSender = UUID.randomUUID();
+        UUID userIdReceiver = UUID.randomUUID();
+        RuntimeException runtimeException = new RuntimeException("test");
+
+        doThrow(runtimeException).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
+
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.getMessages(userIdSender, userIdReceiver));
+        assertSame(runtimeException, ex);
+
+        verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        verify(messageEntityMappers, never()).convertFromInfrastructure(anyList());
+    }
+
+    @Test
+    void shouldPropagateException_whenMessageEntityMappersFails() {
+        UUID userIdSender = UUID.randomUUID();
+        UUID userIdReceiver = UUID.randomUUID();
+        List<MessageEntity> messagesEntity = List.of(
+            MessageEntity.builder().id(UUID.randomUUID()).received(false).build(),
+            MessageEntity.builder().id(UUID.randomUUID()).received(false).build()
+        );
+        RuntimeException runtimeException = new RuntimeException("test");
+
+        doReturn(messagesEntity).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        doThrow(runtimeException).when(messageEntityMappers).convertFromInfrastructure(messagesEntity);
+
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.getMessages(userIdSender, userIdReceiver));
+        assertSame(runtimeException, ex);
+
+        verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        verify(messageEntityMappers).convertFromInfrastructure(messagesEntity);
+    }
+
+    @Test
+    void shouldSaveAndReturnNewMessage_whenAllOk() {
+        NewMessage newMessage = NewMessage.builder()
+            .sender(UUID.randomUUID())
+            .receiver(UUID.randomUUID())
+            .content("test")
+            .build();
+        NewMessageEntity newMessageEntity = NewMessageEntity.builder()
+            .sender(newMessage.getSender())
+            .receiver(newMessage.getReceiver())
+            .content(newMessage.getContent())
+            .build();
+
+        doReturn(newMessageEntity).when(messageEntityMappers).convertToInfrastructure(newMessage);
+
+        OffsetDateTime fixedDateTime = OffsetDateTime.parse("2025-03-12T12:00:00.174779800+01:00");
+        doReturn(fixedDateTime).when(systemDateTimeProvider).now();
+
+        MessageEntity savedMessage = MessageEntity.builder()
+            .sender(newMessageEntity.getSender())
+            .receiver(newMessageEntity.getReceiver())
+            .content(newMessageEntity.getContent())
+            .received(false)
+            .timestamp(fixedDateTime)
+            .build();
+        doReturn(savedMessage).when(messagesRepository).save(savedMessage);
+
+        Message message = Message.builder()
+            .sender(savedMessage.getSender())
+            .receiver(savedMessage.getReceiver())
+            .content(savedMessage.getContent())
+            .build();
+        doReturn(message).when(messageEntityMappers).convertFromInfrastructure(savedMessage);
+
+        Message messageResult = messagesRepoServiceImpl.newMessage(newMessage);
+        assertEquals(message, messageResult);
+
+        verify(messageEntityMappers).convertToInfrastructure(newMessage);
+        verify(messagesRepository).save(savedMessage);
+        verify(messageEntityMappers).convertFromInfrastructure(savedMessage);
+    }
+
+    @Test
+    void shouldPropagateException_whenNewMessageRepositoryFails() {
+        NewMessage newMessage = NewMessage.builder()
+            .sender(UUID.randomUUID())
+            .receiver(UUID.randomUUID())
+            .content("test")
+            .build();
+        NewMessageEntity newMessageEntity = NewMessageEntity.builder()
+            .sender(newMessage.getSender())
+            .receiver(newMessage.getReceiver())
+            .content(newMessage.getContent())
+            .build();
+
+        doReturn(newMessageEntity).when(messageEntityMappers).convertToInfrastructure(newMessage);
+
+        OffsetDateTime fixedDateTime = OffsetDateTime.parse("2025-03-12T12:00:00.174779800+01:00");
+        doReturn(fixedDateTime).when(systemDateTimeProvider).now();
+
+        MessageEntity savedMessage = MessageEntity.builder()
+            .sender(newMessageEntity.getSender())
+            .receiver(newMessageEntity.getReceiver())
+            .content(newMessageEntity.getContent())
+            .received(false)
+            .timestamp(fixedDateTime)
+            .build();
+        RuntimeException runtimeException = new RuntimeException("test");
+
+        doThrow(runtimeException).when(messagesRepository).save(savedMessage);
+
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.newMessage(newMessage));
+        assertSame(runtimeException, ex);
+
+        verify(messageEntityMappers).convertToInfrastructure(newMessage);
+        verify(messagesRepository).save(savedMessage);
+        verify(messageEntityMappers, never()).convertFromInfrastructure(any(MessageEntity.class));
+    }
+
+    @Test
+    void shouldPropagateException_whenNewMessageEntityMappersFails() {
+        NewMessage newMessage = NewMessage.builder()
+            .sender(UUID.randomUUID())
+            .receiver(UUID.randomUUID())
+            .content("test")
+            .build();
+        RuntimeException runtimeException = new RuntimeException("test");
+
+        doThrow(runtimeException).when(messageEntityMappers).convertToInfrastructure(newMessage);
+
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.newMessage(newMessage));
+        assertSame(runtimeException, ex);
+
+        verify(messageEntityMappers).convertToInfrastructure(newMessage);
+        verify(messagesRepository, never()).save(any(MessageEntity.class));
+        verify(messageEntityMappers, never()).convertFromInfrastructure(any(MessageEntity.class));
+    }
+}

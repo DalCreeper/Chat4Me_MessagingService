@@ -1,6 +1,5 @@
 package com.advancia.chat4me_messaging_service.infrastructure.repository;
 
-import com.advancia.chat4me_messaging_service.domain.model.Message;
 import com.advancia.chat4me_messaging_service.infrastructure.model.MessageEntity;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
