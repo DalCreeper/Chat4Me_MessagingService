@@ -61,7 +61,7 @@ public class MessagingApiDelegateImplTest {
     void shouldPropagateException_whenMessageServiceFails() {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Service error");
 
         doThrow(runtimeException).when(messageService).getMessages(userIdSender, userIdReceiver);
 
@@ -80,7 +80,7 @@ public class MessagingApiDelegateImplTest {
             Message.builder().id(UUID.randomUUID()).build(),
             Message.builder().id(UUID.randomUUID()).build()
         );
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Mapping error");
 
         doReturn(messages).when(messageService).getMessages(userIdSender, userIdReceiver);
         doThrow(runtimeException).when(messageMappers).convertFromDomain(messages);
@@ -123,7 +123,7 @@ public class MessagingApiDelegateImplTest {
             .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
             .content("test");
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Service error");
         NewMessage newMessage = new NewMessage();
 
         doReturn(newMessage).when(messageMappers).convertToDomain(newMessageDto);
@@ -144,7 +144,7 @@ public class MessagingApiDelegateImplTest {
             .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
             .content("test");
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Mapping error");
         NewMessage newMessage = new NewMessage();
 
         doThrow(runtimeException).when(messageMappers).convertToDomain(newMessageDto);

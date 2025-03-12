@@ -43,7 +43,7 @@ public class MessageServiceImplTest {
     void shouldPropagateException_whenMessagesRepoServiceFails() {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Service error");
 
         doThrow(runtimeException).when(messagesRepoService).getMessages(userIdSender, userIdReceiver);
 
@@ -77,7 +77,7 @@ public class MessageServiceImplTest {
             UUID.randomUUID(),
             "test"
         );
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Service error");
 
         doThrow(runtimeException).when(messagesRepoService).newMessage(newMessage);
 

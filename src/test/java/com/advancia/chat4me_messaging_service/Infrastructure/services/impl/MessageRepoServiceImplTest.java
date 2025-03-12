@@ -1,6 +1,5 @@
 package com.advancia.chat4me_messaging_service.Infrastructure.services.impl;
 
-import com.advancia.Chat4Me_Messaging_Service.generated.application.model.MessageDto;
 import com.advancia.chat4me_messaging_service.domain.model.Message;
 import com.advancia.chat4me_messaging_service.domain.model.NewMessage;
 import com.advancia.chat4me_messaging_service.infrastructure.mappers.MessageEntityMappers;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -66,7 +64,7 @@ public class MessageRepoServiceImplTest {
     void shouldPropagateException_whenMessagesRepositoryFails() {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Repository error");
 
         doThrow(runtimeException).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
 
@@ -85,7 +83,7 @@ public class MessageRepoServiceImplTest {
             MessageEntity.builder().id(UUID.randomUUID()).received(false).build(),
             MessageEntity.builder().id(UUID.randomUUID()).received(false).build()
         );
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Mapping error");
 
         doReturn(messagesEntity).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
         doThrow(runtimeException).when(messageEntityMappers).convertFromInfrastructure(messagesEntity);
@@ -164,7 +162,7 @@ public class MessageRepoServiceImplTest {
             .received(false)
             .timestamp(fixedDateTime)
             .build();
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Repository error");
 
         doThrow(runtimeException).when(messagesRepository).save(savedMessage);
 
@@ -183,7 +181,7 @@ public class MessageRepoServiceImplTest {
             .receiver(UUID.randomUUID())
             .content("test")
             .build();
-        RuntimeException runtimeException = new RuntimeException("test");
+        RuntimeException runtimeException = new RuntimeException("Mapping error");
 
         doThrow(runtimeException).when(messageEntityMappers).convertToInfrastructure(newMessage);
 
