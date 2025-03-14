@@ -127,7 +127,6 @@ public class MessagingApiDelegateImplTest {
         NewMessage newMessage = new NewMessage();
 
         doReturn(newMessage).when(messageMappers).convertToDomain(newMessageDto);
-
         doThrow(runtimeException).when(messageService).newMessage(newMessage);
 
         Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagingApiDelegateImpl.newMessage(newMessageDto));
@@ -145,7 +144,6 @@ public class MessagingApiDelegateImplTest {
             .receiver(UUID.randomUUID())
             .content("test");
         RuntimeException runtimeException = new RuntimeException("Mapping error");
-        NewMessage newMessage = new NewMessage();
 
         doThrow(runtimeException).when(messageMappers).convertToDomain(newMessageDto);
 
@@ -153,7 +151,7 @@ public class MessagingApiDelegateImplTest {
         assertSame(runtimeException, ex);
 
         verify(messageMappers).convertToDomain(newMessageDto);
-        verify(messageService, never()).newMessage(newMessage);
+        verify(messageService, never()).newMessage(any(NewMessage.class));
         verify(messageMappers, never()).convertFromDomain(any(Message.class));
     }
 }

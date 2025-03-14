@@ -12,7 +12,7 @@ public class SystemDateTimeProviderImplTest {
     private final SystemDateTimeProviderImpl systemDateTimeProviderImpl = new SystemDateTimeProviderImpl();
 
     @Test
-    void shouldReturnCurrentOffsetDateTime() {
+    void shouldReturnCurrentOffsetDateTime_whenAllOk() {
         OffsetDateTime beforeCall = OffsetDateTime.now();
         OffsetDateTime result = systemDateTimeProviderImpl.now();
         OffsetDateTime afterCall = OffsetDateTime.now();
