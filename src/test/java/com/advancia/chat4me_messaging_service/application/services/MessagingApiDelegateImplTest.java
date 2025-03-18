@@ -32,7 +32,7 @@ public class MessagingApiDelegateImplTest {
     private MessagingApiDelegateImpl messagingApiDelegateImpl;
 
     @Test
-    void shouldReturnMessages_whenAllOk() {
+    void shouldReturnMessages_whenIsAllOk() {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
         List<Message> messages = List.of(
@@ -93,7 +93,7 @@ public class MessagingApiDelegateImplTest {
     }
 
     @Test
-    void shouldReturnNewMessage_whenAllOk() {
+    void shouldReturnNewMessage_whenIsAllOk() {
         NewMessageDto newMessageDto = new NewMessageDto()
             .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())

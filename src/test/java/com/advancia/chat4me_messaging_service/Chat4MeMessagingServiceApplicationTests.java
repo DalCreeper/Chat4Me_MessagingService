@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class Chat4MeMessagingServiceApplicationTests {
-
     @Test
     void contextLoads() {
         assertDoesNotThrow(() -> Chat4MeMessagingServiceApplication.main(new String[]{}));

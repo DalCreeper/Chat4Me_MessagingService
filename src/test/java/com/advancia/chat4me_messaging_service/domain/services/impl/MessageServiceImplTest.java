@@ -23,7 +23,7 @@ public class MessageServiceImplTest {
     private MessageServiceImpl messageServiceImpl;
 
     @Test
-    void shouldReturnMessages_whenAllOk() {
+    void shouldReturnMessages_whenIsAllOk() {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
         List<Message> messages = List.of(
@@ -54,7 +54,7 @@ public class MessageServiceImplTest {
     }
 
     @Test
-    void shouldReturnNewMessage_whenAllOk() {
+    void shouldReturnNewMessage_whenIsAllOk() {
         NewMessage newMessage = new NewMessage(
             UUID.randomUUID(),
             UUID.randomUUID(),

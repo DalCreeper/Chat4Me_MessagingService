@@ -35,7 +35,7 @@ public class MessageRepoServiceImplTest {
     private MessagesRepoServiceImpl messagesRepoServiceImpl;
 
     @Test
-    void shouldSetReceivedAndReturnMessages_whenAllOk() {
+    void shouldSetReceivedAndReturnMessages_whenIsAllOk() {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
         List<MessageEntity> messagesEntity = List.of(
@@ -96,7 +96,7 @@ public class MessageRepoServiceImplTest {
     }
 
     @Test
-    void shouldSaveAndReturnNewMessage_whenAllOk() {
+    void shouldSaveAndReturnNewMessage_whenIsAllOk() {
         NewMessage newMessage = NewMessage.builder()
             .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
