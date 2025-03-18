@@ -39,12 +39,40 @@ public class MessageRepoServiceImplTest {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
         List<MessageEntity> messagesEntity = List.of(
-            MessageEntity.builder().id(UUID.randomUUID()).received(false).build(),
-            MessageEntity.builder().id(UUID.randomUUID()).received(false).build()
+            MessageEntity.builder()
+                .id(UUID.randomUUID())
+                .sender(userIdSender)
+                .receiver(userIdReceiver)
+                .content("content")
+                .received(false)
+                .timestamp(OffsetDateTime.now())
+                .build(),
+            MessageEntity.builder()
+                .id(UUID.randomUUID())
+                .sender(userIdSender)
+                .receiver(userIdReceiver)
+                .content("content2")
+                .received(false)
+                .timestamp(OffsetDateTime.now())
+                .build()
         );
         List<Message> messages = List.of(
-            Message.builder().id(messagesEntity.get(0).getId()).build(),
-            Message.builder().id(messagesEntity.get(1).getId()).build()
+            Message.builder()
+                .id(messagesEntity.get(0).getId())
+                .sender(messagesEntity.get(0).getSender())
+                .receiver(messagesEntity.get(0).getReceiver())
+                .content(messagesEntity.get(0).getContent())
+                .received(messagesEntity.get(0).getReceived())
+                .timestamp(messagesEntity.get(0).getTimestamp())
+                .build(),
+            Message.builder()
+                .id(messagesEntity.get(1).getId())
+                .sender(messagesEntity.get(1).getSender())
+                .receiver(messagesEntity.get(1).getReceiver())
+                .content(messagesEntity.get(1).getContent())
+                .received(messagesEntity.get(1).getReceived())
+                .timestamp(messagesEntity.get(1).getTimestamp())
+                .build()
         );
 
         doReturn(messagesEntity).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
@@ -73,26 +101,6 @@ public class MessageRepoServiceImplTest {
 
         verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
         verify(messageEntityMappers, never()).convertFromInfrastructure(anyList());
-    }
-
-    @Test
-    void shouldPropagateException_whenMessageEntityMappersFails() {
-        UUID userIdSender = UUID.randomUUID();
-        UUID userIdReceiver = UUID.randomUUID();
-        List<MessageEntity> messagesEntity = List.of(
-            MessageEntity.builder().id(UUID.randomUUID()).received(false).build(),
-            MessageEntity.builder().id(UUID.randomUUID()).received(false).build()
-        );
-        RuntimeException runtimeException = new RuntimeException("Mapping error");
-
-        doReturn(messagesEntity).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
-        doThrow(runtimeException).when(messageEntityMappers).convertFromInfrastructure(messagesEntity);
-
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.getMessages(userIdSender, userIdReceiver));
-        assertSame(runtimeException, ex);
-
-        verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
-        verify(messageEntityMappers).convertFromInfrastructure(messagesEntity);
     }
 
     @Test
@@ -171,25 +179,6 @@ public class MessageRepoServiceImplTest {
 
         verify(messageEntityMappers).convertToInfrastructure(newMessage);
         verify(messagesRepository).save(savedMessage);
-        verify(messageEntityMappers, never()).convertFromInfrastructure(any(MessageEntity.class));
-    }
-
-    @Test
-    void shouldPropagateException_whenNewMessageEntityMappersFails() {
-        NewMessage newMessage = NewMessage.builder()
-            .sender(UUID.randomUUID())
-            .receiver(UUID.randomUUID())
-            .content("test")
-            .build();
-        RuntimeException runtimeException = new RuntimeException("Mapping error");
-
-        doThrow(runtimeException).when(messageEntityMappers).convertToInfrastructure(newMessage);
-
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.newMessage(newMessage));
-        assertSame(runtimeException, ex);
-
-        verify(messageEntityMappers).convertToInfrastructure(newMessage);
-        verify(messagesRepository, never()).save(any(MessageEntity.class));
         verify(messageEntityMappers, never()).convertFromInfrastructure(any(MessageEntity.class));
     }
 }

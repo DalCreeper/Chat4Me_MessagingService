@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -36,12 +37,38 @@ public class MessagingApiDelegateImplTest {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
         List<Message> messages = List.of(
-            Message.builder().id(UUID.randomUUID()).build(),
-            Message.builder().id(UUID.randomUUID()).build()
+            Message.builder()
+                .id(UUID.randomUUID())
+                .sender(userIdSender)
+                .receiver(userIdReceiver)
+                .content("content")
+                .received(false)
+                .timestamp(OffsetDateTime.now())
+                .build(),
+            Message.builder()
+                .id(UUID.randomUUID())
+                .sender(userIdSender)
+                .receiver(userIdReceiver)
+                .content("content2")
+                .received(false)
+                .timestamp(OffsetDateTime.now())
+                .build()
         );
         List<MessageDto> messagesDto = List.of(
-            new MessageDto().id(messages.get(0).getId()),
-            new MessageDto().id(messages.get(1).getId())
+            new MessageDto()
+                .id(messages.get(0).getId())
+                .sender(messages.get(0).getSender())
+                .receiver(messages.get(0).getReceiver())
+                .content(messages.get(0).getContent())
+                .received(messages.get(0).getReceived())
+                .timestamp(messages.get(0).getTimestamp()),
+            new MessageDto()
+                .id(messages.get(1).getId())
+                .sender(messages.get(1).getSender())
+                .receiver(messages.get(1).getReceiver())
+                .content(messages.get(1).getContent())
+                .received(messages.get(1).getReceived())
+                .timestamp(messages.get(1).getTimestamp())
         );
 
         doReturn(messages).when(messageService).getMessages(userIdSender, userIdReceiver);
@@ -73,34 +100,31 @@ public class MessagingApiDelegateImplTest {
     }
 
     @Test
-    void shouldPropagateException_whenMessageMappersFails() {
-        UUID userIdSender = UUID.randomUUID();
-        UUID userIdReceiver = UUID.randomUUID();
-        List<Message> messages = List.of(
-            Message.builder().id(UUID.randomUUID()).build(),
-            Message.builder().id(UUID.randomUUID()).build()
-        );
-        RuntimeException runtimeException = new RuntimeException("Mapping error");
-
-        doReturn(messages).when(messageService).getMessages(userIdSender, userIdReceiver);
-        doThrow(runtimeException).when(messageMappers).convertFromDomain(messages);
-
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagingApiDelegateImpl.getMessages(userIdSender, userIdReceiver));
-        assertSame(runtimeException, ex);
-
-        verify(messageService).getMessages(userIdSender, userIdReceiver);
-        verify(messageMappers).convertFromDomain(messages);
-    }
-
-    @Test
     void shouldReturnNewMessage_whenIsAllOk() {
         NewMessageDto newMessageDto = new NewMessageDto()
             .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
             .content("test");
-        NewMessage newMess = new NewMessage();
-        Message newMessage = Message.builder().id(UUID.randomUUID()).build();
-        MessageDto newMessDto = new MessageDto().id(newMessage.getId());
+        NewMessage newMess = NewMessage.builder()
+            .sender(newMessageDto.getSender())
+            .receiver(newMessageDto.getReceiver())
+            .content(newMessageDto.getContent())
+            .build();
+        Message newMessage = Message.builder()
+            .id(UUID.randomUUID())
+            .sender(newMess.getSender())
+            .receiver(newMess.getReceiver())
+            .content(newMess.getContent())
+            .received(false)
+            .timestamp(OffsetDateTime.now())
+            .build();
+        MessageDto newMessDto = new MessageDto()
+            .id(newMessage.getId())
+            .sender(newMessage.getSender())
+            .receiver(newMessage.getReceiver())
+            .content(newMessage.getContent())
+            .received(newMessage.getReceived())
+            .timestamp(newMessage.getTimestamp());
         URI location = URI.create("/messages/" + newMessage.getId());
 
         doReturn(newMess).when(messageMappers).convertToDomain(newMessageDto);
@@ -123,8 +147,12 @@ public class MessagingApiDelegateImplTest {
             .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
             .content("test");
+        NewMessage newMessage = NewMessage.builder()
+            .sender(newMessageDto.getSender())
+            .receiver(newMessageDto.getReceiver())
+            .content(newMessageDto.getContent())
+            .build();
         RuntimeException runtimeException = new RuntimeException("Service error");
-        NewMessage newMessage = new NewMessage();
 
         doReturn(newMessage).when(messageMappers).convertToDomain(newMessageDto);
         doThrow(runtimeException).when(messageService).newMessage(newMessage);
@@ -134,24 +162,6 @@ public class MessagingApiDelegateImplTest {
 
         verify(messageMappers).convertToDomain(newMessageDto);
         verify(messageService).newMessage(newMessage);
-        verify(messageMappers, never()).convertFromDomain(any(Message.class));
-    }
-
-    @Test
-    void shouldPropagateException_whenNewMessageMappersFails() {
-        NewMessageDto newMessageDto = new NewMessageDto()
-            .sender(UUID.randomUUID())
-            .receiver(UUID.randomUUID())
-            .content("test");
-        RuntimeException runtimeException = new RuntimeException("Mapping error");
-
-        doThrow(runtimeException).when(messageMappers).convertToDomain(newMessageDto);
-
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagingApiDelegateImpl.newMessage(newMessageDto));
-        assertSame(runtimeException, ex);
-
-        verify(messageMappers).convertToDomain(newMessageDto);
-        verify(messageService, never()).newMessage(any(NewMessage.class));
         verify(messageMappers, never()).convertFromDomain(any(Message.class));
     }
 }

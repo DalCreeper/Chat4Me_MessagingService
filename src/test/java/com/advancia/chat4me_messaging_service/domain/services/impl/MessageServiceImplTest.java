@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,8 +28,22 @@ public class MessageServiceImplTest {
         UUID userIdSender = UUID.randomUUID();
         UUID userIdReceiver = UUID.randomUUID();
         List<Message> messages = List.of(
-            Message.builder().id(UUID.randomUUID()).build(),
-            Message.builder().id(UUID.randomUUID()).build()
+            Message.builder()
+                .id(UUID.randomUUID())
+                .sender(userIdSender)
+                .receiver(userIdReceiver)
+                .content("content")
+                .received(false)
+                .timestamp(OffsetDateTime.now())
+                .build(),
+            Message.builder()
+                .id(UUID.randomUUID())
+                .sender(userIdSender)
+                .receiver(userIdReceiver)
+                .content("content2")
+                .received(false)
+                .timestamp(OffsetDateTime.now())
+                .build()
         );
 
         doReturn(messages).when(messagesRepoService).getMessages(userIdSender, userIdReceiver);
@@ -60,7 +75,14 @@ public class MessageServiceImplTest {
             UUID.randomUUID(),
             "test"
         );
-        Message savedMessage = Message.builder().id(UUID.randomUUID()).build();
+        Message savedMessage = Message.builder()
+            .id(UUID.randomUUID())
+            .sender(newMessage.getSender())
+            .receiver(newMessage.getReceiver())
+            .content(newMessage.getContent())
+            .received(false)
+            .timestamp(OffsetDateTime.now())
+            .build();
 
         doReturn(savedMessage).when(messagesRepoService).newMessage(newMessage);
 
