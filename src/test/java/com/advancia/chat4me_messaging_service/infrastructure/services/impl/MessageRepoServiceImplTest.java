@@ -1,4 +1,4 @@
-package com.advancia.chat4me_messaging_service.Infrastructure.services.impl;
+package com.advancia.chat4me_messaging_service.infrastructure.services.impl;
 
 import com.advancia.chat4me_messaging_service.domain.model.Message;
 import com.advancia.chat4me_messaging_service.domain.model.NewMessage;
@@ -7,7 +7,6 @@ import com.advancia.chat4me_messaging_service.infrastructure.model.MessageEntity
 import com.advancia.chat4me_messaging_service.infrastructure.model.NewMessageEntity;
 import com.advancia.chat4me_messaging_service.infrastructure.repository.MessagesRepository;
 import com.advancia.chat4me_messaging_service.infrastructure.services.SystemDateTimeProvider;
-import com.advancia.chat4me_messaging_service.infrastructure.services.impl.MessagesRepoServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

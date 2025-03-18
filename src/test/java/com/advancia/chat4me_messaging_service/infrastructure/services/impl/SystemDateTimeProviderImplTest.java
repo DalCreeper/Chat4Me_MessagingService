@@ -1,6 +1,5 @@
-package com.advancia.chat4me_messaging_service.Infrastructure.services.impl;
+package com.advancia.chat4me_messaging_service.infrastructure.services.impl;
 
-import com.advancia.chat4me_messaging_service.infrastructure.services.impl.SystemDateTimeProviderImpl;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
