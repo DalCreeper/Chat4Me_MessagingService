@@ -21,8 +21,8 @@ public class MessagingApiDelegateImpl implements MessagingApiDelegate {
     private final MessageMappers messageMappers;
 
     @Override
-    public ResponseEntity<List<MessageDto>> getMessages(UUID userIdSender, UUID userIdReceiver) {
-        List<Message> messages = messageService.getMessages(userIdSender, userIdReceiver);
+    public ResponseEntity<List<MessageDto>> getMessages(String tokenSender, UUID userIdReceiver) {
+        List<Message> messages = messageService.getMessages(tokenSender, userIdReceiver);
         List<MessageDto> messagesDto = messageMappers.convertFromDomain(messages);
         return ResponseEntity.ok(messagesDto);
     }

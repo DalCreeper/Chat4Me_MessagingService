@@ -34,12 +34,12 @@ public class MessagingApiDelegateImplTest {
 
     @Test
     void shouldReturnMessages_whenIsAllOk() {
-        UUID userIdSender = UUID.randomUUID();
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         UUID userIdReceiver = UUID.randomUUID();
         List<Message> messages = List.of(
             Message.builder()
                 .id(UUID.randomUUID())
-                .sender(userIdSender)
+                .tokenSender(tokenSender)
                 .receiver(userIdReceiver)
                 .content("content")
                 .received(false)
@@ -47,7 +47,7 @@ public class MessagingApiDelegateImplTest {
                 .build(),
             Message.builder()
                 .id(UUID.randomUUID())
-                .sender(userIdSender)
+                .tokenSender(tokenSender)
                 .receiver(userIdReceiver)
                 .content("content2")
                 .received(false)
@@ -57,28 +57,28 @@ public class MessagingApiDelegateImplTest {
         List<MessageDto> messagesDto = List.of(
             new MessageDto()
                 .id(messages.get(0).getId())
-                .sender(messages.get(0).getSender())
+                .tokenSender(messages.get(0).getTokenSender())
                 .receiver(messages.get(0).getReceiver())
                 .content(messages.get(0).getContent())
                 .received(messages.get(0).getReceived())
                 .timestamp(messages.get(0).getTimestamp()),
             new MessageDto()
                 .id(messages.get(1).getId())
-                .sender(messages.get(1).getSender())
+                .tokenSender(messages.get(1).getTokenSender())
                 .receiver(messages.get(1).getReceiver())
                 .content(messages.get(1).getContent())
                 .received(messages.get(1).getReceived())
                 .timestamp(messages.get(1).getTimestamp())
         );
 
-        doReturn(messages).when(messageService).getMessages(userIdSender, userIdReceiver);
+        doReturn(messages).when(messageService).getMessages(tokenSender, userIdReceiver);
         doReturn(messagesDto).when(messageMappers).convertFromDomain(messages);
 
-        ResponseEntity<List<MessageDto>> response = messagingApiDelegateImpl.getMessages(userIdSender, userIdReceiver);
+        ResponseEntity<List<MessageDto>> response = messagingApiDelegateImpl.getMessages(tokenSender, userIdReceiver);
         assertEquals(200, response.getStatusCode().value());
         assertEquals(messagesDto, response.getBody());
 
-        verify(messageService).getMessages(userIdSender, userIdReceiver);
+        verify(messageService).getMessages(tokenSender, userIdReceiver);
         //verify(messageService, times(2)).getMessages(userIdSender, userIdReceiver);
         //verify(messageService, never()).getMessages(userIdSender, userIdReceiver);
         verify(messageMappers).convertFromDomain(messages);
@@ -86,33 +86,34 @@ public class MessagingApiDelegateImplTest {
 
     @Test
     void shouldPropagateException_whenMessageServiceFails() {
-        UUID userIdSender = UUID.randomUUID();
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         UUID userIdReceiver = UUID.randomUUID();
         RuntimeException runtimeException = new RuntimeException("Service error");
 
-        doThrow(runtimeException).when(messageService).getMessages(userIdSender, userIdReceiver);
+        doThrow(runtimeException).when(messageService).getMessages(tokenSender, userIdReceiver);
 
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagingApiDelegateImpl.getMessages(userIdSender, userIdReceiver));
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagingApiDelegateImpl.getMessages(tokenSender, userIdReceiver));
         assertSame(runtimeException, ex);
 
-        verify(messageService).getMessages(userIdSender, userIdReceiver);
+        verify(messageService).getMessages(tokenSender, userIdReceiver);
         verify(messageMappers, never()).convertFromDomain(anyList());
     }
 
     @Test
     void shouldReturnNewMessage_whenIsAllOk() {
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         NewMessageDto newMessageDto = new NewMessageDto()
-            .sender(UUID.randomUUID())
+            .tokenSender(tokenSender)
             .receiver(UUID.randomUUID())
             .content("test");
         NewMessage newMess = NewMessage.builder()
-            .sender(newMessageDto.getSender())
+            .tokenSender(newMessageDto.getTokenSender())
             .receiver(newMessageDto.getReceiver())
             .content(newMessageDto.getContent())
             .build();
         Message newMessage = Message.builder()
             .id(UUID.randomUUID())
-            .sender(newMess.getSender())
+            .tokenSender(newMess.getTokenSender())
             .receiver(newMess.getReceiver())
             .content(newMess.getContent())
             .received(false)
@@ -120,7 +121,7 @@ public class MessagingApiDelegateImplTest {
             .build();
         MessageDto newMessDto = new MessageDto()
             .id(newMessage.getId())
-            .sender(newMessage.getSender())
+            .tokenSender(newMessage.getTokenSender())
             .receiver(newMessage.getReceiver())
             .content(newMessage.getContent())
             .received(newMessage.getReceived())
@@ -144,11 +145,11 @@ public class MessagingApiDelegateImplTest {
     @Test
     void shouldPropagateException_whenNewMessageServiceFails() {
         NewMessageDto newMessageDto = new NewMessageDto()
-            .sender(UUID.randomUUID())
+            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
             .receiver(UUID.randomUUID())
             .content("test");
         NewMessage newMessage = NewMessage.builder()
-            .sender(newMessageDto.getSender())
+            .tokenSender(newMessageDto.getTokenSender())
             .receiver(newMessageDto.getReceiver())
             .content(newMessageDto.getContent())
             .build();

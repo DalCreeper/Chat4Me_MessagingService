@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface MessageEntityMappers {
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "sender", target = "sender")
+    @Mapping(source = "tokenSender", target = "tokenSender")
     @Mapping(source = "receiver", target = "receiver")
     @Mapping(source = "content", target = "content")
     @Mapping(source = "received", target = "received")
@@ -20,7 +20,7 @@ public interface MessageEntityMappers {
     Message convertFromInfrastructure(MessageEntity messageEntity);
     List<Message> convertFromInfrastructure(List<MessageEntity> messagesEntity);
 
-    @Mapping(source = "sender", target = "sender")
+    @Mapping(source = "tokenSender", target = "tokenSender")
     @Mapping(source = "receiver", target = "receiver")
     @Mapping(source = "content", target = "content")
     NewMessageEntity convertToInfrastructure(NewMessage newMessage);

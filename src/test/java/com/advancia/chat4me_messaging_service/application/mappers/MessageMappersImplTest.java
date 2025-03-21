@@ -24,7 +24,7 @@ public class MessageMappersImplTest {
     void shouldConvertMessageFromDomain_whenIsAllOk() {
         Message message = Message.builder()
             .id(UUID.randomUUID())
-            .sender(UUID.randomUUID())
+            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
             .receiver(UUID.randomUUID())
             .content("content")
             .received(false)
@@ -34,7 +34,7 @@ public class MessageMappersImplTest {
         MessageDto messageDto = messageMappersImpl.convertFromDomain(message);
         assertNotNull(messageDto);
         assertEquals(message.getId(), messageDto.getId());
-        assertEquals(message.getSender(), messageDto.getSender());
+        assertEquals(message.getTokenSender(), messageDto.getTokenSender());
         assertEquals(message.getReceiver(), messageDto.getReceiver());
         assertEquals(message.getContent(), messageDto.getContent());
         assertEquals(message.getReceived(), messageDto.getReceived());
@@ -48,10 +48,11 @@ public class MessageMappersImplTest {
 
     @Test
     void shouldConvertListOfMessagesFromDomain_whenIsAllOk() {
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         List<Message> messages = List.of(
             Message.builder()
                 .id(UUID.randomUUID())
-                .sender(UUID.randomUUID())
+                .tokenSender(tokenSender)
                 .receiver(UUID.randomUUID())
                 .content("content")
                 .received(false)
@@ -59,7 +60,7 @@ public class MessageMappersImplTest {
                 .build(),
             Message.builder()
                 .id(UUID.randomUUID())
-                .sender(UUID.randomUUID())
+                .tokenSender(tokenSender)
                 .receiver(UUID.randomUUID())
                 .content("content2")
                 .received(false)
@@ -91,13 +92,13 @@ public class MessageMappersImplTest {
     @Test
     void shouldConvertNewMessageToDomain_whenIsAllOk() {
         NewMessageDto newMessageDto = new NewMessageDto()
-            .sender(UUID.randomUUID())
+            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
             .receiver(UUID.randomUUID())
             .content("test");
 
         NewMessage newMessage = messageMappersImpl.convertToDomain(newMessageDto);
         assertNotNull(newMessage);
-        assertEquals(newMessageDto.getSender(), newMessage.getSender());
+        assertEquals(newMessageDto.getTokenSender(), newMessage.getTokenSender());
         assertEquals(newMessageDto.getReceiver(), newMessage.getReceiver());
         assertEquals(newMessageDto.getContent(), newMessage.getContent());
     }

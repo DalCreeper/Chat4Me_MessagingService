@@ -15,9 +15,9 @@ import java.util.UUID;
 public interface MessagesRepository extends JpaRepository<MessageEntity, UUID> {
 
     @Query("SELECT m FROM MessageEntity m " +
-           "WHERE m.sender = :userIdSender " +
+           "WHERE m.tokenSender = :tokenSender " +
            "AND (:userIdReceiver IS NULL OR m.receiver = :userIdReceiver)")
-    List<MessageEntity> getMessages(@Param("userIdSender") UUID userIdSender,
+    List<MessageEntity> getMessages(@Param("tokenSender") String tokenSender,
                               @Param("userIdReceiver") UUID userIdReceiver);
 
     @NonNull

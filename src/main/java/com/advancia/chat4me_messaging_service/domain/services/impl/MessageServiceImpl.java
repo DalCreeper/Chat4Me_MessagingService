@@ -16,8 +16,8 @@ public class MessageServiceImpl implements MessageService {
     private final MessagesRepoService messagesRepoService;
 
     @Override
-    public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
-        return messagesRepoService.getMessages(userIdSender, userIdReceiver);
+    public List<Message> getMessages(String tokenSender, UUID userIdReceiver) {
+        return messagesRepoService.getMessages(tokenSender, userIdReceiver);
     }
 
     @Override

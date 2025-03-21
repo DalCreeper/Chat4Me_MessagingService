@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 public class MessageRepoServiceImplTest {
     @Mock
@@ -35,12 +34,12 @@ public class MessageRepoServiceImplTest {
 
     @Test
     void shouldSetReceivedAndReturnMessages_whenIsAllOk() {
-        UUID userIdSender = UUID.randomUUID();
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         UUID userIdReceiver = UUID.randomUUID();
         List<MessageEntity> messagesEntity = List.of(
             MessageEntity.builder()
                 .id(UUID.randomUUID())
-                .sender(userIdSender)
+                .tokenSender(tokenSender)
                 .receiver(userIdReceiver)
                 .content("content")
                 .received(false)
@@ -48,7 +47,7 @@ public class MessageRepoServiceImplTest {
                 .build(),
             MessageEntity.builder()
                 .id(UUID.randomUUID())
-                .sender(userIdSender)
+                .tokenSender(tokenSender)
                 .receiver(userIdReceiver)
                 .content("content2")
                 .received(false)
@@ -58,7 +57,7 @@ public class MessageRepoServiceImplTest {
         List<Message> messages = List.of(
             Message.builder()
                 .id(messagesEntity.get(0).getId())
-                .sender(messagesEntity.get(0).getSender())
+                .tokenSender(messagesEntity.get(0).getTokenSender())
                 .receiver(messagesEntity.get(0).getReceiver())
                 .content(messagesEntity.get(0).getContent())
                 .received(messagesEntity.get(0).getReceived())
@@ -66,7 +65,7 @@ public class MessageRepoServiceImplTest {
                 .build(),
             Message.builder()
                 .id(messagesEntity.get(1).getId())
-                .sender(messagesEntity.get(1).getSender())
+                .tokenSender(messagesEntity.get(1).getTokenSender())
                 .receiver(messagesEntity.get(1).getReceiver())
                 .content(messagesEntity.get(1).getContent())
                 .received(messagesEntity.get(1).getReceived())
@@ -74,43 +73,43 @@ public class MessageRepoServiceImplTest {
                 .build()
         );
 
-        doReturn(messagesEntity).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        doReturn(messagesEntity).when(messagesRepository).getMessages(tokenSender, userIdReceiver);
         doReturn(messages).when(messageEntityMappers).convertFromInfrastructure(messagesEntity);
 
-        List<Message> messagesResult = messagesRepoServiceImpl.getMessages(userIdSender, userIdReceiver);
+        List<Message> messagesResult = messagesRepoServiceImpl.getMessages(tokenSender, userIdReceiver);
 
         assertEquals(messages, messagesResult);
         assertTrue(messagesEntity.stream().allMatch(MessageEntity::getReceived));
 
         verify(messagesRepository).saveAll(messagesEntity);
-        verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        verify(messagesRepository).getMessages(tokenSender, userIdReceiver);
         verify(messageEntityMappers).convertFromInfrastructure(messagesEntity);
     }
 
     @Test
     void shouldPropagateException_whenMessagesRepositoryFails() {
-        UUID userIdSender = UUID.randomUUID();
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         UUID userIdReceiver = UUID.randomUUID();
         RuntimeException runtimeException = new RuntimeException("Repository error");
 
-        doThrow(runtimeException).when(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        doThrow(runtimeException).when(messagesRepository).getMessages(tokenSender, userIdReceiver);
 
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.getMessages(userIdSender, userIdReceiver));
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messagesRepoServiceImpl.getMessages(tokenSender, userIdReceiver));
         assertSame(runtimeException, ex);
 
-        verify(messagesRepository).getMessages(userIdSender, userIdReceiver);
+        verify(messagesRepository).getMessages(tokenSender, userIdReceiver);
         verify(messageEntityMappers, never()).convertFromInfrastructure(anyList());
     }
 
     @Test
     void shouldSaveAndReturnNewMessage_whenIsAllOk() {
         NewMessage newMessage = NewMessage.builder()
-            .sender(UUID.randomUUID())
+            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
             .receiver(UUID.randomUUID())
             .content("test")
             .build();
         NewMessageEntity newMessageEntity = NewMessageEntity.builder()
-            .sender(newMessage.getSender())
+            .tokenSender(newMessage.getTokenSender())
             .receiver(newMessage.getReceiver())
             .content(newMessage.getContent())
             .build();
@@ -121,7 +120,7 @@ public class MessageRepoServiceImplTest {
         doReturn(fixedDateTime).when(systemDateTimeProvider).now();
 
         MessageEntity savedMessage = MessageEntity.builder()
-            .sender(newMessageEntity.getSender())
+            .tokenSender(newMessageEntity.getTokenSender())
             .receiver(newMessageEntity.getReceiver())
             .content(newMessageEntity.getContent())
             .received(false)
@@ -130,7 +129,7 @@ public class MessageRepoServiceImplTest {
         doReturn(savedMessage).when(messagesRepository).save(savedMessage);
 
         Message message = Message.builder()
-            .sender(savedMessage.getSender())
+            .tokenSender(savedMessage.getTokenSender())
             .receiver(savedMessage.getReceiver())
             .content(savedMessage.getContent())
             .build();
@@ -147,12 +146,12 @@ public class MessageRepoServiceImplTest {
     @Test
     void shouldPropagateException_whenNewMessageRepositoryFails() {
         NewMessage newMessage = NewMessage.builder()
-            .sender(UUID.randomUUID())
+            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
             .receiver(UUID.randomUUID())
             .content("test")
             .build();
         NewMessageEntity newMessageEntity = NewMessageEntity.builder()
-            .sender(newMessage.getSender())
+            .tokenSender(newMessage.getTokenSender())
             .receiver(newMessage.getReceiver())
             .content(newMessage.getContent())
             .build();
@@ -163,7 +162,7 @@ public class MessageRepoServiceImplTest {
         doReturn(fixedDateTime).when(systemDateTimeProvider).now();
 
         MessageEntity savedMessage = MessageEntity.builder()
-            .sender(newMessageEntity.getSender())
+            .tokenSender(newMessageEntity.getTokenSender())
             .receiver(newMessageEntity.getReceiver())
             .content(newMessageEntity.getContent())
             .received(false)

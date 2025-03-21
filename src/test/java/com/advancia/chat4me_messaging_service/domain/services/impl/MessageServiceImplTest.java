@@ -25,12 +25,12 @@ public class MessageServiceImplTest {
 
     @Test
     void shouldReturnMessages_whenIsAllOk() {
-        UUID userIdSender = UUID.randomUUID();
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         UUID userIdReceiver = UUID.randomUUID();
         List<Message> messages = List.of(
             Message.builder()
                 .id(UUID.randomUUID())
-                .sender(userIdSender)
+                .tokenSender(tokenSender)
                 .receiver(userIdReceiver)
                 .content("content")
                 .received(false)
@@ -38,7 +38,7 @@ public class MessageServiceImplTest {
                 .build(),
             Message.builder()
                 .id(UUID.randomUUID())
-                .sender(userIdSender)
+                .tokenSender(tokenSender)
                 .receiver(userIdReceiver)
                 .content("content2")
                 .received(false)
@@ -46,38 +46,38 @@ public class MessageServiceImplTest {
                 .build()
         );
 
-        doReturn(messages).when(messagesRepoService).getMessages(userIdSender, userIdReceiver);
+        doReturn(messages).when(messagesRepoService).getMessages(tokenSender, userIdReceiver);
 
-        List<Message> result = messageServiceImpl.getMessages(userIdSender, userIdReceiver);
+        List<Message> result = messageServiceImpl.getMessages(tokenSender, userIdReceiver);
         assertEquals(messages, result);
 
-        verify(messagesRepoService).getMessages(userIdSender, userIdReceiver);
+        verify(messagesRepoService).getMessages(tokenSender, userIdReceiver);
     }
 
     @Test
     void shouldPropagateException_whenMessagesRepoServiceFails() {
-        UUID userIdSender = UUID.randomUUID();
+        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         UUID userIdReceiver = UUID.randomUUID();
         RuntimeException runtimeException = new RuntimeException("Service error");
 
-        doThrow(runtimeException).when(messagesRepoService).getMessages(userIdSender, userIdReceiver);
+        doThrow(runtimeException).when(messagesRepoService).getMessages(tokenSender, userIdReceiver);
 
-        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messageServiceImpl.getMessages(userIdSender, userIdReceiver));
+        Exception ex = assertThrowsExactly(RuntimeException.class, () -> messageServiceImpl.getMessages(tokenSender, userIdReceiver));
         assertSame(runtimeException, ex);
 
-        verify(messagesRepoService).getMessages(userIdSender, userIdReceiver);
+        verify(messagesRepoService).getMessages(tokenSender, userIdReceiver);
     }
 
     @Test
     void shouldReturnNewMessage_whenIsAllOk() {
         NewMessage newMessage = new NewMessage(
-            UUID.randomUUID(),
+            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik",
             UUID.randomUUID(),
             "test"
         );
         Message savedMessage = Message.builder()
             .id(UUID.randomUUID())
-            .sender(newMessage.getSender())
+            .tokenSender(newMessage.getTokenSender())
             .receiver(newMessage.getReceiver())
             .content(newMessage.getContent())
             .received(false)
@@ -95,7 +95,7 @@ public class MessageServiceImplTest {
     @Test
     void shouldPropagateException_whenNewMessageRepoServiceFails() {
         NewMessage newMessage = new NewMessage(
-            UUID.randomUUID(),
+            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik",
             UUID.randomUUID(),
             "test"
         );

@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewMessageEntity {
-    private UUID sender;
+    private String tokenSender;
     private UUID receiver;
     private String content;
 }

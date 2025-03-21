@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Message {
     private UUID id;
-    private UUID sender;
+    private String tokenSender;
     private UUID receiver;
     private String content;
     private Boolean received;
