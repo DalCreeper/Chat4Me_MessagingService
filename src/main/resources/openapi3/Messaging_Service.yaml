@@ -16,7 +16,7 @@ info:
     The service is designed to provide a smooth communication experience while ensuring data security and confidentiality.
 
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8082
     description: Messaging service production server
 
 tags:

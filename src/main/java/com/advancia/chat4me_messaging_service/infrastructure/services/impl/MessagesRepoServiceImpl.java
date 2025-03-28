@@ -36,13 +36,17 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
     public Message newMessage(NewMessage newMessage) {
         NewMessageEntity newMessageEntity = messageEntityMappers.convertToInfrastructure(newMessage);
         OffsetDateTime now = systemDateTimeProvider.now();
-        MessageEntity savedMessage = MessageEntity.builder()
+        MessageEntity savedMessage = buildMessageEntity(newMessageEntity, now);
+        return messageEntityMappers.convertFromInfrastructure(messagesRepository.save(savedMessage));
+    }
+
+    private MessageEntity buildMessageEntity(NewMessageEntity newMessageEntity, OffsetDateTime now) {
+        return MessageEntity.builder()
             .tokenSender(newMessageEntity.getTokenSender())
             .receiver(newMessageEntity.getReceiver())
             .content(newMessageEntity.getContent())
             .received(false)
             .timestamp(now)
             .build();
-        return messageEntityMappers.convertFromInfrastructure(messagesRepository.save(savedMessage));
     }
 }

@@ -16,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
