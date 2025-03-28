@@ -119,3 +119,11 @@ components:
           format: uuid
         content:
           type: string
+
+    ErrorMessage:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorDesc:
+          type: string
