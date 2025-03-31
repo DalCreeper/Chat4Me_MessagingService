@@ -25,8 +25,8 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
     private final SystemDateTimeProvider systemDateTimeProvider;
 
     @Override
-    public List<Message> getMessages(String tokenSender, UUID userIdReceiver) {
-        List<MessageEntity> messagesEntity = messagesRepository.getMessages(tokenSender, userIdReceiver);
+    public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
+        List<MessageEntity> messagesEntity = messagesRepository.getMessages(userIdSender, userIdReceiver);
         messagesEntity.forEach(msg -> msg.setReceived(true));
         messagesRepository.saveAll(messagesEntity);
         return messageEntityMappers.convertFromInfrastructure(messagesEntity);
@@ -42,7 +42,7 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
 
     private MessageEntity buildMessageEntity(NewMessageEntity newMessageEntity, OffsetDateTime now) {
         return MessageEntity.builder()
-            .tokenSender(newMessageEntity.getTokenSender())
+            .sender(newMessageEntity.getSender())
             .receiver(newMessageEntity.getReceiver())
             .content(newMessageEntity.getContent())
             .received(false)

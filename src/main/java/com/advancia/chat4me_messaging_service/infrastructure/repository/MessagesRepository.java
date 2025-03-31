@@ -15,10 +15,10 @@ import java.util.UUID;
 public interface MessagesRepository extends JpaRepository<MessageEntity, UUID> {
 
     @Query("SELECT m FROM MessageEntity m " +
-           "WHERE m.tokenSender = :tokenSender " +
+           "WHERE m.sender = :userIdSender " +
            "AND (:userIdReceiver IS NULL OR m.receiver = :userIdReceiver)")
     List<MessageEntity> getMessages(
-        @Param("tokenSender") String tokenSender,
+        @Param("userIdSender") UUID userIdSender,
         @Param("userIdReceiver") UUID userIdReceiver
     );
 

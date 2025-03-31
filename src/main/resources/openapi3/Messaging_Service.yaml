@@ -31,11 +31,12 @@ paths:
       summary: Get messages for the authenticated user
       operationId: getMessages
       parameters:
-        - name: token_sender
+        - name: user_id_sender
           in: query
           required: true
           schema:
             type: string
+            format: uuid
         - name: user_id_receiver
           description: Id provided if a list of messages sent to a specific user is needed
           in: query
@@ -82,9 +83,10 @@ components:
           type: string
           description: Message ID
           format: uuid
-        tokenSender:
+        sender:
           type: string
-          description: Token of the sender
+          description: UUID of the sender
+          format: uuid
         receiver:
           type: string
           description: UUID of the receiver
@@ -106,13 +108,14 @@ components:
     NewMessageDto:
       type: object
       required:
-        - tokenSender
+        - sender
         - receiver
         - content
       properties:
-        tokenSender:
+        sender:
           type: string
-          description: Token of the sender
+          description: UUID of the sender
+          format: uuid
         receiver:
           type: string
           description: UUID of the receiver

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Service
 public interface MessagesRepoService {
-    List<Message> getMessages(String tokenSender, UUID uuidReceiver);
+    List<Message> getMessages(UUID userIdSender, UUID uuidReceiver);
 
     Message newMessage(NewMessage newMessage);
 }

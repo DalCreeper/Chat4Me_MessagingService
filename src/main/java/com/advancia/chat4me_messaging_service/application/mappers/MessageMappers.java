@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface MessageMappers {
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "tokenSender", target = "tokenSender")
+    @Mapping(source = "sender", target = "sender")
     @Mapping(source = "receiver", target = "receiver")
     @Mapping(source = "content", target = "content")
     @Mapping(source = "received", target = "received")
@@ -20,7 +20,7 @@ public interface MessageMappers {
     MessageDto convertFromDomain(Message message);
     List<MessageDto> convertFromDomain(List<Message> messages);
 
-    @Mapping(source = "tokenSender", target = "tokenSender")
+    @Mapping(source = "sender", target = "sender")
     @Mapping(source = "receiver", target = "receiver")
     @Mapping(source = "content", target = "content")
     NewMessage convertToDomain(NewMessageDto newMessageDto);

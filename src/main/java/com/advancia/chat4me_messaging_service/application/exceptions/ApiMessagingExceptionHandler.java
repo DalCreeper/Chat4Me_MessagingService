@@ -1,4 +1,4 @@
-package com.advancia.chat4me_messaging_service.domain.exceptions;
+package com.advancia.chat4me_messaging_service.application.exceptions;
 
 import com.advancia.Chat4Me_Messaging_Service.generated.application.model.ErrorMessage;
 import lombok.extern.log4j.Log4j2;

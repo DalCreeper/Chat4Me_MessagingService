@@ -1,4 +1,4 @@
-package com.advancia.chat4me_messaging_service.domain.exceptions;
+package com.advancia.chat4me_messaging_service.application.exceptions;
 
 public class MessagingServiceException extends RuntimeException {
     public MessagingServiceException(String message) {

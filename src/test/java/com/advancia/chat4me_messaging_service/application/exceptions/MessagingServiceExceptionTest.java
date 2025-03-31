@@ -1,5 +1,6 @@
-package com.advancia.chat4me_messaging_service.domain.exceptions;
+package com.advancia.chat4me_messaging_service.application.exceptions;
 
+import com.advancia.chat4me_messaging_service.application.exceptions.MessagingServiceException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

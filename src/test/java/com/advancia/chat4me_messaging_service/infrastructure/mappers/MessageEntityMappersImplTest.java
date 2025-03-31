@@ -24,7 +24,7 @@ public class MessageEntityMappersImplTest {
     void shouldConvertMessageEntityFromInfrastructure_whenIsAllOk() {
         MessageEntity messageEntity = MessageEntity.builder()
             .id(UUID.randomUUID())
-            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
+            .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
             .content("content")
             .received(false)
@@ -34,7 +34,7 @@ public class MessageEntityMappersImplTest {
         Message message = messageEntityMappersImpl.convertFromInfrastructure(messageEntity);
         assertNotNull(message);
         assertEquals(messageEntity.getId(), message.getId());
-        assertEquals(messageEntity.getTokenSender(), message.getTokenSender());
+        assertEquals(messageEntity.getSender(), message.getSender());
         assertEquals(messageEntity.getReceiver(), message.getReceiver());
         assertEquals(messageEntity.getContent(), message.getContent());
         assertEquals(messageEntity.getReceived(), message.getReceived());
@@ -48,11 +48,10 @@ public class MessageEntityMappersImplTest {
 
     @Test
     void shouldConvertListOfMessageEntitiesFromInfrastructure_whenIsAllOk() {
-        String tokenSender = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik";
         List<MessageEntity> messagesEntity = List.of(
             MessageEntity.builder()
                 .id(UUID.randomUUID())
-                .tokenSender(tokenSender)
+                .sender(UUID.randomUUID())
                 .receiver(UUID.randomUUID())
                 .content("content")
                 .received(false)
@@ -60,7 +59,7 @@ public class MessageEntityMappersImplTest {
                 .build(),
             MessageEntity.builder()
                 .id(UUID.randomUUID())
-                .tokenSender(tokenSender)
+                .sender(UUID.randomUUID())
                 .receiver(UUID.randomUUID())
                 .content("content2")
                 .received(false)
@@ -92,14 +91,14 @@ public class MessageEntityMappersImplTest {
     @Test
     void shouldConvertNewMessageToInfrastructure_whenIsAllOk() {
         NewMessage newMessage = NewMessage.builder()
-            .tokenSender("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3ZjExM2JiMi0zOGViLTQ3ZTctODRhMi1jZjI3MDMwMDRiODYiLCJpYXQiOjE3NDExMDczMDAsImV4cCI6MTc0MTE5MzcwMH0.lVCPs_piZa-se2ABiy6xjfor5oAvKSvv1T_n5YYKnik")
+            .sender(UUID.randomUUID())
             .receiver(UUID.randomUUID())
             .content("test")
             .build();
 
         NewMessageEntity newMessageEntity = messageEntityMappersImpl.convertToInfrastructure(newMessage);
         assertNotNull(newMessageEntity);
-        assertEquals(newMessage.getTokenSender(), newMessageEntity.getTokenSender());
+        assertEquals(newMessage.getSender(), newMessageEntity.getSender());
         assertEquals(newMessage.getReceiver(), newMessageEntity.getReceiver());
         assertEquals(newMessage.getContent(), newMessageEntity.getContent());
     }

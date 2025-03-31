@@ -1,6 +1,7 @@
-package com.advancia.chat4me_messaging_service.domain.exceptions;
+package com.advancia.chat4me_messaging_service.application.exceptions;
 
 import com.advancia.Chat4Me_Messaging_Service.generated.application.model.ErrorMessage;
+import com.advancia.chat4me_messaging_service.application.exceptions.ApiMessagingExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
