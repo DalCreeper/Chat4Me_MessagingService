@@ -15,4 +15,7 @@ Il servizio espone le seguenti api:
 - Scrittura di un nuovo messaggio autenticato* per un’utenza specifica
 - Lettura degli utenti disponibili
 
+*Messaggio autenticato: un messaggio di cui il server può garantire che è stato scritto da un utente
+specifico.
+
 ---
