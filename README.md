@@ -3,6 +3,10 @@ Progetto di esercitazione sulla comunicazione tra API.
 
 Il sistema si articola in tre servizi principali: l’API Gateway, il Servizio di Autenticazione e il Servizio di Messaggistica, ciascuno con un ruolo chiave.
 
+Vedi anche:
+- [https://github.com/DalCreeper/Chat4Me_APIGateway]
+- [https://github.com/DalCreeper/Chat4Me_AuthService]
+
 ---
 
 ## Servizio di messaggistica
