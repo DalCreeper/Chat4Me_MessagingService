@@ -1,4 +1,4 @@
-# PiadineriaAdvancia
+# Chat4Me MessagingService
 Progetto di esercitazione sulla comunicazione tra API.
 
 Il sistema si articola in tre servizi principali: l’API Gateway, il Servizio di Autenticazione e il Servizio di Messaggistica, ciascuno con un ruolo chiave.
