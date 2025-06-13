@@ -9,6 +9,8 @@ import com.advancia.chat4me_messaging_service.infrastructure.model.NewMessageEnt
 import com.advancia.chat4me_messaging_service.infrastructure.repository.MessagesRepository;
 import com.advancia.chat4me_messaging_service.infrastructure.services.SystemDateTimeProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
     private final MessageEntityMappers messageEntityMappers;
     private final SystemDateTimeProvider systemDateTimeProvider;
 
+    @Cacheable(value = "messages", key = "T(java.util.Objects).hash(#userIdSender, #userIdReceiver)")
     @Override
     public List<Message> getMessages(UUID userIdSender, UUID userIdReceiver) {
         List<MessageEntity> messagesEntity = messagesRepository.getMessages(userIdSender, userIdReceiver);
@@ -32,6 +35,7 @@ public class MessagesRepoServiceImpl implements MessagesRepoService {
         return messageEntityMappers.convertFromInfrastructure(messagesEntity);
     }
 
+    @CacheEvict(value = "messages", key = "#newMessage.sender.toString() + '-' + #newMessage.receiver.toString()")
     @Override
     public Message newMessage(NewMessage newMessage) {
         NewMessageEntity newMessageEntity = messageEntityMappers.convertToInfrastructure(newMessage);

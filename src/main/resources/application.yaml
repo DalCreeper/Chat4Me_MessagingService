@@ -3,7 +3,7 @@ spring:
     name: Chat4Me - Auth Service
   datasource:
     url: jdbc:oracle:thin:@localhost:1521:orcl
-    username: Loris_Chat4Me_MessagingService
+    username: Loris_Chat4Me
     password: Password98
     driver-class-name: oracle.jdbc.OracleDriver
   jpa:
