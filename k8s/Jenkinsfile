@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'chat4me-message-app'
+        IMAGE_TAG = "latest"
+    }
+
+    stages {
+        stage('Clona repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Esegui test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+            }
+        }
+
+        stage('Deploy to Minikube') {
+            steps {
+                sh '''
+                # Usa Minikube come docker daemon
+                eval $(minikube docker-env)
+                docker build -t dalcreeper/docker-loris-repo:chat4me-message-0.0.1 .
+
+                # Applica i manifest (che devono essere nel repo, tipo k8s/deployment.yaml)
+                kubectl apply -f k8s/
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline terminata.'
+        }
+        success {
+            echo 'Build e deploy completati con successo!'
+        }
+        failure {
+            echo 'Errore durante il processo.'
+        }
+    }
+}

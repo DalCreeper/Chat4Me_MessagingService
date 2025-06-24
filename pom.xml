@@ -155,8 +155,8 @@
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi3/Messaging_Service.yaml</inputSpec>
-                            <apiPackage>${project.groupId}.Chat4Me_Messaging_Service.generated.application.api</apiPackage>
-                            <modelPackage>${project.groupId}.Chat4Me_Messaging_Service.generated.application.model</modelPackage>
+                            <apiPackage>${project.groupId}.chat4me_messaging_service.generated.application.api</apiPackage>
+                            <modelPackage>${project.groupId}.chat4me_messaging_service.generated.application.model</modelPackage>
                             <generatorName>spring</generatorName>
                             <output>${project.build.directory}/generated-sources/openapi</output>
                             <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>

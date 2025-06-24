@@ -1,6 +1,6 @@
 package com.advancia.chat4me_messaging_service.application.exceptions;
 
-import com.advancia.Chat4Me_Messaging_Service.generated.application.model.ErrorMessage;
+import com.advancia.chat4me_messaging_service.generated.application.model.ErrorMessage;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
