@@ -29,12 +29,6 @@ pipeline {
             }
         }
 
-        stage('Configura Docker per Minikube') {
-            steps {
-                bat 'for /f "delims=" %%i in (\'minikube -p minikube docker-env --shell cmd\') do %%i'
-            }
-        }
-
         stage('Build Docker image') {
             steps {
                 bat 'docker build -t chat4me-message-service .'
