@@ -21,19 +21,27 @@ pipeline {
 
         stage('Configura Docker per Minikube') {
             steps {
-                bat 'FOR /f "tokens=*" %%i IN (\'minikube docker-env --shell cmd\') DO %%i'
+                bat '''
+                    minikube docker-env --shell cmd > set_docker_env.bat
+                    call set_docker_env.bat
+                '''
             }
         }
 
         stage('Build Docker image') {
             steps {
-                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
+                bat '''
+                    call set_docker_env.bat
+                    docker build -t %IMAGE_NAME%:%IMAGE_TAG% .
+                '''
             }
         }
 
         stage('Deploy su Kubernetes') {
             steps {
-                bat 'kubectl apply -f k8s/'
+                bat '''
+                    kubectl apply -f k8s/
+                '''
             }
         }
     }
