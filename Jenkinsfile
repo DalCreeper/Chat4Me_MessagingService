@@ -7,6 +7,7 @@ pipeline {
 				bat '''
 					echo ===== Setting del context corretto =====
 					kubectl config use-context minikube
+					kubectl config set-cluster minikube --server=https://127.0.0.1:58270
 					
 					echo ===== Visualizzazione context =====
 					kubectl config current-context
@@ -16,8 +17,6 @@ pipeline {
 					
 					echo ===== Stato dei pod =====
 					kubectl get pods
-					
-					
 				'''
 			}
 		}
