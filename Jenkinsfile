@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clona repo') {
             steps {
-                git 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
+                git branch: 'main', url: 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
             }
         }
 
