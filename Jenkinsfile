@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'chat4me-message-service'
-        IMAGE_TAG = 'latest'
-        DOCKER_REGISTRY = 'localhost'
+        IMAGE_NAME = 'dalcreeper/docker-loris-repo'
+        IMAGE_TAG = 'chat4me-message-0.0.1'
     }
 
     stages {
@@ -20,38 +19,57 @@ pipeline {
             }
         }
 
-        stage('Avvia Minikube (se necessario)') {
-            steps {
-                bat 'minikube start || exit /b 0'
-            }
-        }
+        stage('Avvia Minikube se non è attivo') {
+			steps {
+				bat '''
+					minikube status || minikube start --driver=docker ^
+						--docker-env HTTP_PROXY=http://host.docker.internal:3128 ^
+						--docker-env HTTPS_PROXY=http://host.docker.internal:3128 ^
+						--docker-env NO_PROXY=localhost,127.0.0.1,registry.k8s.io
+				'''
+			}
+		}
+		
+		stage('Verifica accesso a Internet da Minikube') {
+			steps {
+				bat 'minikube ssh "curl -I https://registry.k8s.io"'
+			}
+		}
 
         stage('Configura Docker per Minikube') {
             steps {
-                bat 'minikube docker-env --shell cmd > set_docker_env.bat'
-                bat 'call set_docker_env.bat'
+                bat '''
+                    for /f "tokens=*" %%i in ('minikube docker-env --shell cmd') do %%i
+                '''
             }
         }
 
         stage('Build Docker image') {
             steps {
-                bat "docker build -t %DOCKER_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG% ."
+                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
             }
         }
 
         stage('Deploy su Kubernetes') {
             steps {
-                bat 'kubectl apply -f k8s/deployment.yaml'
+                bat '''
+                    timeout 30 kubectl apply -f k8s\\deployment.yaml --validate=false
+                    timeout 30 kubectl apply -f k8s\\service.yaml --validate=false
+                    timeout 30 kubectl apply -f k8s\\hpa.yaml --validate=false
+                '''
             }
         }
     }
 
     post {
+        success {
+            echo '✅ Build e deploy completati con successo!'
+        }
         failure {
             echo '❌ Errore durante il processo.'
         }
-        success {
-            echo '✅ Deploy completato con successo!'
+        always {
+            echo 'Pipeline terminata.'
         }
     }
 }
