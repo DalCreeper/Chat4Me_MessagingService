@@ -18,7 +18,13 @@ pipeline {
                 bat 'mvn clean package -DskipTests'
             }
         }
-
+		
+		stage('Verifica utente Jenkins') {
+			steps {
+				bat 'echo UTENTE ATTIVO: %USERNAME%'
+			}
+		}
+		
         stage('Avvia Minikube') {
 			steps {
 				bat '''
@@ -29,6 +35,12 @@ pipeline {
 				'''
 			}
 		}
+		
+		stage('Verify Minikube') {
+            steps {
+                bat 'minikube status'
+            }
+        }
 
         stage('Configura Docker per Minikube') {
             steps {
@@ -48,8 +60,6 @@ pipeline {
             steps {
                 bat '''
                     timeout 30 kubectl apply -f k8s\\deployment.yaml --validate=false
-                    timeout 30 kubectl apply -f k8s\\service.yaml --validate=false
-                    timeout 30 kubectl apply -f k8s\\hpa.yaml --validate=false
                 '''
             }
         }
