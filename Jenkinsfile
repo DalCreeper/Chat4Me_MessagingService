@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.6-eclipse-temurin-21'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = 'dalcreeper/docker-loris-repo'
@@ -19,29 +15,25 @@ pipeline {
 
         stage('Build con Maven') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                bat 'mvn clean package -DskipTests'
             }
         }
 
         stage('Configura Docker per Minikube') {
             steps {
-                sh 'eval $(minikube docker-env)'
+                bat 'FOR /f "tokens=*" %%i IN (\'minikube docker-env --shell cmd\') DO %%i'
             }
         }
 
         stage('Build Docker image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
             }
         }
-		
+
         stage('Deploy su Kubernetes') {
             steps {
-                sh '''
-					eval $(minikube docker-env)
-					docker build -t dalcreeper/docker-loris-repo:chat4me-message-0.0.1 .
-					kubectl apply -f k8s/
-				'''
+                bat 'kubectl apply -f k8s/'
             }
         }
     }
