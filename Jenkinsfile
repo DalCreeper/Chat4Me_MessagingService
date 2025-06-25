@@ -31,10 +31,13 @@ pipeline {
             }
         }
 		
-		# Applica i manifest (nel repo k8s, tipo k8s/deployment.yaml)
         stage('Deploy su Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/
+                sh '''
+					eval $(minikube docker-env)
+					docker build -t dalcreeper/docker-loris-repo:chat4me-message-0.0.1 .
+					kubectl apply -f k8s/
+				'''
             }
         }
     }
