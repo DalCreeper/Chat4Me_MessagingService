@@ -4,8 +4,10 @@ pipeline {
     stages {
 		stage('Stato attuale servizi') {
 			steps {
-				echo ===== Stato dei pod =====
-				kubectl get pods
+				bat '''
+					echo ===== Stato dei pod =====
+					kubectl get pods
+				'''
 			}
 		}
 	
