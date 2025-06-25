@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        HTTP_PROXY = 'http://host.docker.internal:3128'
-        HTTPS_PROXY = 'http://host.docker.internal:3128'
-        NO_PROXY = 'localhost,127.0.0.1,registry.k8s.io'
-    }
-
     stages {
         stage('Clona repo') {
             steps {
@@ -23,21 +17,14 @@ pipeline {
         stage('Avvia Minikube se non attivo') {
             steps {
                 bat '''
-                @echo off
                 echo Verifico stato Minikube...
-                set MINIKUBE_STATUS=
                 for /f "tokens=2 delims=:" %%A in ('minikube status -p minikube-jenkins ^| findstr "host:"') do (
-                    set MINIKUBE_STATUS=%%A
-                )
-                if "%MINIKUBE_STATUS:~1%"=="Stopped" (
-                    echo Minikube non è attivo. Lo elimino e lo riavvio...
-                    call minikube delete -p minikube-jenkins
-                    call minikube start -p minikube-jenkins --driver=docker ^
-                        --docker-env HTTP_PROXY=%HTTP_PROXY% ^
-                        --docker-env HTTPS_PROXY=%HTTPS_PROXY% ^
-                        --docker-env NO_PROXY=%NO_PROXY%
-                ) else (
-                    echo Minikube già attivo.
+                    if /I "%%A"==" Stopped" (
+                        echo Minikube non è attivo. Avvio...
+                        minikube start -p minikube-jenkins --driver=docker
+                    ) else (
+                        echo Minikube già attivo.
+                    )
                 )
                 '''
             }
