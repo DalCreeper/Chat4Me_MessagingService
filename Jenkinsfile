@@ -5,8 +5,16 @@ pipeline {
 		stage('Stato attuale servizi') {
 			steps {
 				bat '''
+					echo ===== Visualizzazione context =====
+					kubectl config current-context
+					
+					echo ===== Visualizzazione configurazioni =====
+					kubectl config view --minify
+					
 					echo ===== Stato dei pod =====
 					kubectl get pods
+					
+					
 				'''
 			}
 		}
