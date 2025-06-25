@@ -21,17 +21,17 @@ pipeline {
                     docker ps
 
                     echo ===== Minikube info =====
-                    minikube status -p minikube-jenkins
+                    minikube status
 
                     echo ===== Docker logs del container Minikube =====
-                    docker logs minikube-jenkins --tail 50
+                    docker logs minikube --tail 50
                 '''
             }
         }
 
         stage('Configura Docker per Minikube') {
             steps {
-                bat 'for /f "delims=" %%i in (\'minikube -p minikube-jenkins docker-env --shell cmd\') do %%i'
+                bat 'for /f "delims=" %%i in (\'minikube -p minikube docker-env --shell cmd\') do %%i'
             }
         }
 
