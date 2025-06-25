@@ -22,17 +22,20 @@ pipeline {
 
         stage('Avvia Minikube se non attivo') {
             steps {
-                bat '''
-                    echo Verifico stato Minikube...
-                    minikube status -p minikube-jenkins || (
-                        echo Minikube non è attivo. Avvio...
-                        timeout /t 2
-                        minikube start -p minikube-jenkins --driver=docker ^
-                            --docker-env HTTP_PROXY=%HTTP_PROXY% ^
+				bat '''
+				echo Verifico stato Minikube...
+				for /f "tokens=2 delims=:" %%A in ('minikube status -p minikube-jenkins ^| findstr "host:"') do (
+					if /I "%%A"==" Stopped" (
+						echo Minikube non è attivo. Avvio...
+						minikube start -p minikube-jenkins --driver=docker ^
+							--docker-env HTTP_PROXY=%HTTP_PROXY% ^
                             --docker-env HTTPS_PROXY=%HTTPS_PROXY% ^
                             --docker-env NO_PROXY=%NO_PROXY%
-                    )
-                '''
+					) else (
+						echo Minikube già attivo.
+					)
+				)
+				'''
             }
         }
 
