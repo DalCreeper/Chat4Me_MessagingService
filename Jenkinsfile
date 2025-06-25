@@ -18,6 +18,12 @@ pipeline {
                 bat 'mvn clean package -DskipTests'
             }
         }
+		
+		stage('Start Minikube') {
+            steps {
+                bat 'minikube start'
+            }
+        }
 
         stage('Configura Docker per Minikube') {
             steps {
