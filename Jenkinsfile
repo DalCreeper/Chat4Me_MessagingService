@@ -2,6 +2,13 @@ pipeline {
     agent any
 
     stages {
+		stage('Stato attuale servizi') {
+			steps {
+				echo ===== Stato dei pod =====
+				kubectl get pods
+			}
+		}
+	
         stage('Clona repo') {
             steps {
                 git branch: 'main', url: 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
@@ -11,21 +18,6 @@ pipeline {
         stage('Build con Maven') {
             steps {
                 bat 'mvn clean package -DskipTests'
-            }
-        }
-
-        stage('Espone informazioni Minikube') {
-            steps {
-                bat '''
-                    echo ===== Docker containers in esecuzione =====
-                    docker ps
-
-                    echo ===== Minikube info =====
-                    minikube status
-
-                    echo ===== Docker logs del container Minikube =====
-                    docker logs minikube --tail 50
-                '''
             }
         }
 
