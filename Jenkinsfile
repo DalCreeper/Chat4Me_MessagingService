@@ -19,20 +19,14 @@ pipeline {
             }
         }
 
-        stage('Avvia Minikube se non è attivo') {
+        stage('Avvia Minikube') {
 			steps {
 				bat '''
-					minikube status || minikube start --driver=docker ^
+					minikube start --driver=docker ^
 						--docker-env HTTP_PROXY=http://host.docker.internal:3128 ^
 						--docker-env HTTPS_PROXY=http://host.docker.internal:3128 ^
 						--docker-env NO_PROXY=localhost,127.0.0.1,registry.k8s.io
 				'''
-			}
-		}
-		
-		stage('Verifica accesso a Internet da Minikube') {
-			steps {
-				bat 'minikube ssh "curl -I https://registry.k8s.io"'
 			}
 		}
 
