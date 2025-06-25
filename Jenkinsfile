@@ -4,13 +4,13 @@ pipeline {
     environment {
         IMAGE_NAME = 'chat4me-message-service'
         IMAGE_TAG = 'latest'
-        DOCKER_REGISTRY = 'localhost' // Per Minikube locale
+        DOCKER_REGISTRY = 'localhost'
     }
 
     stages {
         stage('Clona repo') {
             steps {
-                git 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
+                git branch: 'main', url: 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
             }
         }
 
