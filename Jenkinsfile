@@ -22,20 +22,24 @@ pipeline {
 
         stage('Avvia Minikube se non attivo') {
             steps {
-				bat '''
-				echo Verifico stato Minikube...
-				for /f "tokens=2 delims=:" %%A in ('minikube status -p minikube-jenkins ^| findstr "host:"') do (
-					if /I "%%A"==" Stopped" (
-						echo Minikube non è attivo. Avvio...
-						minikube start -p minikube-jenkins --driver=docker ^
-							--docker-env HTTP_PROXY=%HTTP_PROXY% ^
-                            --docker-env HTTPS_PROXY=%HTTPS_PROXY% ^
-                            --docker-env NO_PROXY=%NO_PROXY%
-					) else (
-						echo Minikube già attivo.
-					)
-				)
-				'''
+                bat '''
+                @echo off
+                echo Verifico stato Minikube...
+                set MINIKUBE_STATUS=
+                for /f "tokens=2 delims=:" %%A in ('minikube status -p minikube-jenkins ^| findstr "host:"') do (
+                    set MINIKUBE_STATUS=%%A
+                )
+                if "%MINIKUBE_STATUS:~1%"=="Stopped" (
+                    echo Minikube non è attivo. Lo elimino e lo riavvio...
+                    call minikube delete -p minikube-jenkins
+                    call minikube start -p minikube-jenkins --driver=docker ^
+                        --docker-env HTTP_PROXY=%HTTP_PROXY% ^
+                        --docker-env HTTPS_PROXY=%HTTPS_PROXY% ^
+                        --docker-env NO_PROXY=%NO_PROXY%
+                ) else (
+                    echo Minikube già attivo.
+                )
+                '''
             }
         }
 
@@ -71,7 +75,6 @@ pipeline {
                 bat '''
                     echo Applico i manifest...
                     kubectl apply -f k8s/deployment.yaml
-                    kubectl apply -f k8s/service.yaml
 
                     echo ===== Stato dei pod =====
                     kubectl get pods
