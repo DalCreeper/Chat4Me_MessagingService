@@ -2,14 +2,15 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'dalcreeper/docker-loris-repo'
-        IMAGE_TAG = 'chat4me-message-0.0.1'
+        IMAGE_NAME = 'chat4me-message-service'
+        IMAGE_TAG = 'latest'
+        DOCKER_REGISTRY = 'localhost' // Per Minikube locale
     }
 
     stages {
         stage('Clona repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
+                git 'https://github.com/DalCreeper/Chat4Me_MessagingService.git'
             }
         }
 
@@ -18,49 +19,39 @@ pipeline {
                 bat 'mvn clean package -DskipTests'
             }
         }
-		
-		stage('Start Minikube') {
+
+        stage('Avvia Minikube (se necessario)') {
             steps {
-                bat 'minikube start'
+                bat 'minikube start || exit /b 0'
             }
         }
 
         stage('Configura Docker per Minikube') {
             steps {
-                bat '''
-                    minikube docker-env --shell cmd > set_docker_env.bat
-                    call set_docker_env.bat
-                '''
+                bat 'minikube docker-env --shell cmd > set_docker_env.bat'
+                bat 'call set_docker_env.bat'
             }
         }
 
         stage('Build Docker image') {
             steps {
-                bat '''
-                    call set_docker_env.bat
-                    docker build -t %IMAGE_NAME%:%IMAGE_TAG% .
-                '''
+                bat "docker build -t %DOCKER_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG% ."
             }
         }
 
         stage('Deploy su Kubernetes') {
             steps {
-                bat '''
-                    kubectl apply -f k8s/
-                '''
+                bat 'kubectl apply -f k8s/deployment.yaml'
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline terminata.'
+        failure {
+            echo '❌ Errore durante il processo.'
         }
         success {
-            echo 'Build e deploy completati con successo!'
-        }
-        failure {
-            echo 'Errore durante il processo.'
+            echo '✅ Deploy completato con successo!'
         }
     }
 }
