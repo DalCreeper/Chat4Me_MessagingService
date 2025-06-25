@@ -28,10 +28,7 @@ pipeline {
         stage('Avvia Minikube') {
 			steps {
 				bat '''
-					minikube start --driver=docker ^
-						--docker-env HTTP_PROXY=http://host.docker.internal:3128 ^
-						--docker-env HTTPS_PROXY=http://host.docker.internal:3128 ^
-						--docker-env NO_PROXY=localhost,127.0.0.1,registry.k8s.io
+					timeout 30 minikube start -p minikube-jenkins --driver=docker --docker-env HTTP_PROXY=http://host.docker.internal:3128 --docker-env HTTPS_PROXY=http://host.docker.internal:3128 --docker-env NO_PROXY=localhost,127.0.0.1,registry.k8s.io
 				'''
 			}
 		}
