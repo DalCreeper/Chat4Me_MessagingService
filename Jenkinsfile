@@ -5,6 +5,9 @@ pipeline {
 		stage('Stato attuale servizi') {
 			steps {
 				bat '''
+					echo ===== Setting del context corretto =====
+					kubectl config use-context minikube
+					
 					echo ===== Visualizzazione context =====
 					kubectl config current-context
 					
