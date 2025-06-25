@@ -28,7 +28,11 @@ pipeline {
         stage('Avvia Minikube') {
 			steps {
 				bat '''
+				if not exist "%USERPROFILE%\\.minikube\\machines\\minikube-jenkins" (
 					minikube start -p minikube-jenkins --driver=docker --docker-env HTTP_PROXY=http://host.docker.internal:3128 --docker-env HTTPS_PROXY=http://host.docker.internal:3128 --docker-env NO_PROXY=localhost,127.0.0.1,registry.k8s.io
+				) else (
+					echo "Minikube già inizializzato"
+				)
 				'''
 			}
 		}
