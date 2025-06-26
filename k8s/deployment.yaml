@@ -73,4 +73,4 @@ spec:
               service:
                 name: chat4me-message-service
                 port:
-                  number: 80
+                  number: 8010
