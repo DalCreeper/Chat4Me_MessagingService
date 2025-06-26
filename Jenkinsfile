@@ -31,7 +31,7 @@ pipeline {
 				bat '''
 					echo ===== Setting del context corretto =====
 					kubectl config use-context minikube
-					kubectl config set-cluster minikube --server=https://127.0.0.1:${env.PROXY_PORT}
+					kubectl config set-cluster minikube --server=https://127.0.0.1:%PROXY_PORT%
 					
 					echo ===== Visualizzazione context =====
 					kubectl config current-context
