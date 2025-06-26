@@ -14,14 +14,14 @@ pipeline {
 							@echo off
 							for /f "tokens=1" %%i in ('docker ps ^| findstr k8s-minikube') do (
 								for /f "tokens=2 delims=:" %%j in ('docker port %%i ^| findstr 8443') do (
-									echo %%j
+									echo %%j > port.txt
 								)
 							)
 						''',
-						returnStdout: true
-					).trim()
-					env.PROXY_PORT = output
-					echo "Porta rilevata: ${env.PROXY_PORT}"
+						returnStatus: true
+					)
+					def port = readFile('port.txt').trim()
+					echo "✅ Porta trovata: ${port}"
 				}
 			}
 		}
@@ -29,6 +29,8 @@ pipeline {
 		stage('Stato attuale servizi') {
 			steps {
 				bat '''
+					set /p PROXY_PORT=<port.txt
+					echo ===== Porta usata: %PROXY_PORT% =====
 					echo ===== Setting del context corretto =====
 					kubectl config use-context minikube
 					kubectl config set-cluster minikube --server=https://127.0.0.1:%PROXY_PORT%
