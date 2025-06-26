@@ -62,14 +62,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: chat4me-message-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - host: chat4me-message.local
       http:
         paths:
-          - path: /
+          - path: /messages
             pathType: Prefix
             backend:
               service:
