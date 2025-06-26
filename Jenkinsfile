@@ -55,9 +55,6 @@ pipeline {
 
                     echo ===== Servizi esposti =====
                     kubectl --server=%PROXY_URL% get svc
-					
-					echo ===== Sistemo l'accesso esterno =====
-					kubectl --server=%PROXY_URL% patch svc ingress-nginx-controller -n ingress-nginx --type="json" -p "[{\"op\":\"replace\",\"path\":\"/spec/type\",\"value\":\"LoadBalancer\"}]"
                 '''
             }
         }
