@@ -36,8 +36,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8082
-      nodePort: 30082
-  type: NodePort
+  type: ClusterIP
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
