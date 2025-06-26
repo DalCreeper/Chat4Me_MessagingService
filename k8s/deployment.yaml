@@ -63,13 +63,13 @@ kind: Ingress
 metadata:
   name: chat4me-message-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - host: chat4me-message.local
       http:
         paths:
-          - path: /messages/?(.*)
+          - path: /messages
             pathType: Prefix
             backend:
               service:
