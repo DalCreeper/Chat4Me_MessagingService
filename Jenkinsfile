@@ -20,7 +20,7 @@ pipeline {
 					kubectl config view --minify
 					
 					echo ===== Stato dei pod =====
-					kubectl get pods
+					kubectl --server=%PROXY_URL% get pods
 				'''
 			}
 		}
@@ -54,7 +54,7 @@ pipeline {
                     kubectl --server=%PROXY_URL% get pods
 
                     echo ===== Servizi esposti =====
-                    kubectl get svc
+                    kubectl --server=%PROXY_URL% get svc
                 '''
             }
         }
