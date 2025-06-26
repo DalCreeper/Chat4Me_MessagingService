@@ -34,7 +34,7 @@ spec:
     app: chat4me-message
   ports:
     - protocol: TCP
-      port: 8010
+      port: 80
       targetPort: 8082
       nodePort: 30082
   type: NodePort
@@ -57,22 +57,3 @@ spec:
         target:
           type: Utilization
           averageUtilization: 85
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: chat4me-message-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-    - host: chat4me-message.local
-      http:
-        paths:
-          - path: /messages
-            pathType: Prefix
-            backend:
-              service:
-                name: chat4me-message-service
-                port:
-                  number: 8010
