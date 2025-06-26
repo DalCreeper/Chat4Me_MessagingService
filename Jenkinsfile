@@ -1,6 +1,11 @@
 pipeline {
     agent any
-
+	
+	environment {
+        PROXY_PORT = '8001'
+        PROXY_URL = "http://127.0.0.1:${env.PROXY_PORT}"
+    }
+	
     stages {
 		stage('Stato attuale servizi') {
 			steps {
@@ -8,6 +13,9 @@ pipeline {
 					echo ===== Setting del context corretto =====
 					kubectl config use-context minikube
 					kubectl config set-cluster minikube --server=https://127.0.0.1:58270
+					
+					echo ===== Test connessione al server Kubernetes tramite proxy... =====
+                    curl %PROXY_URL%/api || exit /b 1
 					
 					echo ===== Visualizzazione context =====
 					kubectl config current-context
