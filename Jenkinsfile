@@ -1,13 +1,37 @@
 pipeline {
     agent any
+	
+	environment {
+        PROXY_PORT = '0000'
+    }
 
     stages {
+		stage('Get Minikube Port') {
+			steps {
+				script {
+					def output = bat(
+						script: '''
+							@echo off
+							for /f "tokens=1" %%i in ('docker ps ^| findstr k8s-minikube') do (
+								for /f "tokens=2 delims=:" %%j in ('docker port %%i ^| findstr 8443') do (
+									echo %%j
+								)
+							)
+						''',
+						returnStdout: true
+					).trim()
+					env.PROXY_PORT = output
+					echo "Porta rilevata: ${env.PROXY_PORT}"
+				}
+			}
+		}
+	
 		stage('Stato attuale servizi') {
 			steps {
 				bat '''
 					echo ===== Setting del context corretto =====
 					kubectl config use-context minikube
-					REM kubectl config set-cluster minikube --server=https://127.0.0.1:58270
+					REM kubectl config set-cluster minikube --server=https://127.0.0.1:${env.PROXY_PORT}
 					
 					echo ===== Visualizzazione context =====
 					kubectl config current-context
